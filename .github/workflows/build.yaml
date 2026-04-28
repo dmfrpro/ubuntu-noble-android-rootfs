@@ -1,0 +1,27 @@
+name: Build ubu-noble
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_push:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push to the dockerhub
+        uses: docker/build-push-action@v7
+        with:
+          push: true
+          tags: "${{ secrets.DOCKER_USERNAME }}/ubuntu-noble-android-rootfs:latest"
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/ubuntu-noble-android-rootfs:latest
+          cache-to: type=inline
